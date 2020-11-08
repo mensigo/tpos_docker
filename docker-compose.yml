@@ -1,0 +1,23 @@
+version: "3.0"
+services:
+
+  db:
+    image: mysql:5.7
+    command: --local-infile=1
+    ports:
+      - "23023:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d/:ro
+
+  csv_load:
+    build: ./csv_load
+    depends_on:
+      - db
+    ports:
+      - "5050:5050"
+    volumes:
+      - ./csv_load/csv_data:/code/csv_data
+
+
