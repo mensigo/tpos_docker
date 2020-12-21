@@ -1,5 +1,3 @@
-import os
-import sys
 import time
 from mysql.connector import MySQLConnection, Error
 from configparser import ConfigParser
@@ -25,7 +23,7 @@ def read_config(filename='config.ini', section='mysql'):
     return db
 
 
-def connect_to_db(attempts=10, delay=15, allow_local_infile=True, buffered=True):
+def connect_to_db(attempts=5, delay=15, allow_local_infile=True, buffered=True):
     '''Try to connect to database with reconnecting if necessary.
     :param attempts: number of attempts to recconect to database
     :param delay: period of time to wait between consequent attempts
@@ -37,9 +35,9 @@ def connect_to_db(attempts=10, delay=15, allow_local_infile=True, buffered=True)
     for i in range(attempts+1):
         try:
             conn = MySQLConnection(
-	        **dbconfig,
-	        allow_local_infile=allow_local_infile,
-	        buffered=buffered)
+                **dbconfig,
+                allow_local_infile=allow_local_infile,
+                buffered=buffered)
             print('[SUCCESS] Connection is set.', flush=True)
             break
         except Error:
@@ -52,35 +50,18 @@ def connect_to_db(attempts=10, delay=15, allow_local_infile=True, buffered=True)
     return conn
 
 
-def main(filename='csv_data/data.csv', tablename='my_table', ignore_first=True):
-    '''Connect to database and load data from local file.
-    :param filename: name of .csv file
-    :param tablename: name of created table
-    :param ignore_first: if the 1st row of data .csv is ignored'''
+def main(tablename='my_table'):
+    '''Connect to database and print the data.
+    :param tablename: name of the table to print'''
     try:
         # connect
         conn = connect_to_db()
         cursor = conn.cursor()
-        # ensure local_infile = 1
-        cursor.execute("SHOW GLOBAL VARIABLES LIKE 'local_infile'")
+        cursor.execute(f'SELECT * FROM {tablename}')
+        # print
+        print(f'---{tablename}---')
         for row in cursor.fetchall():
             print(row)
-        # create table & fulfill
-        cursor.execute(f'CREATE TABLE {tablename} (text TEXT, number INT)')
-        ignore_str = 'IGNORE 1 ROWS' if ignore_first else ''
-        load_data_query = f'''
-            LOAD DATA LOCAL INFILE "{filename}"
-            INTO TABLE {tablename}
-            COLUMNS TERMINATED BY ','
-            OPTIONALLY ENCLOSED BY '"'
-            ESCAPED BY '"'
-            LINES TERMINATED BY '\n'
-            {ignore_str}
-            (text, number);
-        '''
-        assert(os.path.exists(filename))
-        cursor.execute(load_data_query)
-        conn.commit()
     except Error as e:
         print(e)
     except ConnectionError as e:

@@ -3,6 +3,7 @@ services:
 
   db:
     image: mysql:5.7
+    container_name: db
     command: --local-infile=1
     ports:
       - "23023:3306"
@@ -13,11 +14,24 @@ services:
 
   csv_load:
     build: ./csv_load
+    container_name: csv_load
     depends_on:
       - db
     ports:
-      - "5050:5050"
+      - "23046:5050"
     volumes:
       - ./csv_load/csv_data:/code/csv_data
+
+  app:
+    build: ./app
+    container_name: app
+    depends_on:
+      - db
+      - csv_load
+    ports:
+      - "23069:5000"
+    volumes:
+      - ./app:/code
+
 
 
