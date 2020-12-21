@@ -1,6 +1,6 @@
-<i>Docker-compose project
+*Docker-compose project*
 
-services:
+Services:
 - db (mysql)
 - csv_load (python)
 - app (flask)
@@ -17,8 +17,8 @@ To verify GET:
 
 
 Details:
-- by default, the first row of .csv file is ignored, but it can be changed in csv_load/load_csv.py as main(..) param
+- by default, the first row of .csv file is ignored, but it can be managed via main(...) param in csv_load/load_csv.py
 - service #1 (db): data is not hard-coded, but loaded via service #2 (only empty database is initialized with db/init.sql)
 - service #2 (csv_load): data verification with csv_load/check/check.py, volumed .csv file (in .yml),
-container stops (no need to rm according to TG chat), data .csv is not hard-coded
-- service #3 GET / returns .json,  GET /health returns 200, other requests return custom message
+container stops (no need to remove), data .csv is not hard-coded
+- service #3 (app): GET / returns .json (data), GET /health returns 200 (status), other requests return custom message
