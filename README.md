@@ -1,18 +1,19 @@
-Docker-compose project
+<i>Docker-compose project
 
-services: db (mysql), csv_load (python), app (flask)
+services:
+- db (mysql)
+- csv_load (python)
+- app (flask)
 
 
 To verify that data is loaded:
-pip3 install -r csv_load/requirements.txt
-cd csv_load/check
-python3 check.py
+cd csv_load/check && pip3 install -r requirements.txt && python3 check.py
 
 
 To verify GET:
-curl http://0.0.0.0:23069/
-curl http://0.0.0.0:23069/health
-curl http://0.0.0.0:23069/something
+- curl http://0.0.0.0:23069/
+- curl http://0.0.0.0:23069/health
+- curl http://0.0.0.0:23069/something
 
 
 Details:
